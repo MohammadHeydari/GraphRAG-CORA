@@ -10,9 +10,9 @@ HOPS = 1
 ALPHA = 0.7  # FAISS weight
 BETA = 0.3   # citation weight
 
-# =========================
+
 # LOAD PAPERS
-# =========================
+
 papers = {}
 with open(BASE_PATH + "papers_dataset.txt", "r", encoding="utf-8") as f:
     for line in f:
@@ -38,9 +38,8 @@ def decode(text):
             out.append(words_dict[code])
     return " ".join(out)
 
-# =========================
+
 # CITATION GRAPH
-# =========================
 graph = defaultdict(list)
 reverse_graph = defaultdict(list)
 
@@ -51,9 +50,7 @@ with open(BASE_PATH + "citations.txt", "r") as f:
         graph[src].append(dst)
         reverse_graph[dst].append(src)
 
-# =========================
 # SIMPLE CITATION SCORE (PageRank-like)
-# =========================
 def citation_score(pid):
     return len(reverse_graph[pid])  # indegree (simple importance)
 
@@ -63,9 +60,7 @@ def normalize_scores(papers_list):
     max_s = max(scores) if scores else 1
     return {p: citation_score(p)/max_s for p in papers_list}
 
-# =========================
 # LOAD FAISS
-# =========================
 embeddings = np.load("paper_embeddings.npy")
 paper_ids = np.load("paper_ids.npy")
 
@@ -75,9 +70,7 @@ faiss.normalize_L2(embeddings)
 index = faiss.IndexFlatIP(embeddings.shape[1])
 index.add(embeddings)
 
-# =========================
 # HYBRID RETRIEVAL
-# =========================
 def retrieve(query):
     q_vec = model.encode(query, normalize_embeddings=True)
 
@@ -97,9 +90,7 @@ def retrieve(query):
     scored.sort(reverse=True)
     return [p for _, p in scored]
 
-# =========================
 # GRAPH EXPANSION
-# =========================
 def expand(seed):
     visited = set(seed)
     frontier = set(seed)
@@ -113,9 +104,7 @@ def expand(seed):
 
     return visited
 
-# =========================
 # CONTEXT BUILDER
-# =========================
 def build_context(seeds):
     nodes = expand(seeds)
     texts = []
@@ -126,9 +115,7 @@ def build_context(seeds):
 
     return "\n".join(texts)
 
-# =========================
 # ASK
-# =========================
 def ask(q):
     seeds = retrieve(q)
     context = build_context(seeds)
@@ -154,9 +141,7 @@ Answer clearly and explain relationships between papers.
 
     return res["message"]["content"]
 
-# =========================
 # CLI
-# =========================
 if __name__ == "__main__":
     print("Hybrid GraphRAG ready 🚀 (exit to quit)\n")
 

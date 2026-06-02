@@ -4,25 +4,25 @@ import numpy as np
 import faiss
 from torch_geometric.datasets import Planetoid
 
-# -----------------------
-# 1. Load dataset
+
+# Load dataset
 dataset = Planetoid(root='data', name='Cora')
 data = dataset[0]
 edges = data.edge_index.numpy()
 
-# -----------------------
-# 2. Load embeddings
+
+# Load embeddings
 embeddings = np.load("embeddings.npy")
 
-# -----------------------
-# 3. Build FAISS index
+
+# Build FAISS index
 dim = embeddings.shape[1]
 index = faiss.IndexFlatL2(dim)
 index.add(embeddings)
 
 
-# -----------------------
-# 4. GraphRAG multi-hop retrieval
+
+# GraphRAG multi-hop retrieval
 def graph_rag_search(query_vec, k=5):
     # Step 1: vector retrieval
     D, I = index.search(query_vec, k)
@@ -37,8 +37,8 @@ def graph_rag_search(query_vec, k=5):
     return list(expanded)
 
 
-# -----------------------
-# 5. Test
+
+# Test
 query = embeddings[0].reshape(1, -1)
 result_nodes = graph_rag_search(query)
 print("Expanded nodes for GraphRAG:", result_nodes)

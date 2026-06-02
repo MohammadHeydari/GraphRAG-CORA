@@ -1,16 +1,14 @@
 import ollama
 from collections import defaultdict
 
-# =========================
+
 # CONFIG
-# =========================
 BASE_PATH = "./CORA/"
 TOP_K_SEEDS = 3
 HOPS = 1
 
-# =========================
-# 1. LOAD WORDS DICTIONARY
-# =========================
+
+# LOAD WORDS DICTIONARY
 words_dict = {}
 
 with open(BASE_PATH + "words_dictionary.txt", "r", encoding="utf-8") as f:
@@ -22,9 +20,7 @@ with open(BASE_PATH + "words_dictionary.txt", "r", encoding="utf-8") as f:
         words_dict[code] = word
 
 
-# =========================
-# 2. LOAD PAPERS
-# =========================
+# LOAD PAPERS
 papers = {}
 
 with open(BASE_PATH + "papers_dataset.txt", "r", encoding="utf-8") as f:
@@ -37,9 +33,7 @@ with open(BASE_PATH + "papers_dataset.txt", "r", encoding="utf-8") as f:
         papers[paper_id] = features
 
 
-# =========================
-# 3. LOAD CITATION GRAPH
-# =========================
+# LOAD CITATION GRAPH
 citation_graph = defaultdict(list)
 
 with open(BASE_PATH + "citations.txt", "r", encoding="utf-8") as f:
@@ -52,9 +46,7 @@ with open(BASE_PATH + "citations.txt", "r", encoding="utf-8") as f:
         citation_graph[src].append(dst)
 
 
-# =========================
-# 4. DECODE FEATURES
-# =========================
+# DECODE FEATURES
 def decode_features(feature_string):
     words = []
     for item in feature_string.split(","):
@@ -64,9 +56,7 @@ def decode_features(feature_string):
     return " ".join(words)
 
 
-# =========================
-# 5. SIMPLE RETRIEVAL (IMPORTANT FIX)
-# =========================
+# SIMPLE RETRIEVAL (IMPORTANT FIX)
 def score_paper(query, paper_text):
     query_words = set(query.lower().split())
     paper_words = set(paper_text.lower().split())
@@ -86,9 +76,7 @@ def retrieve_seed_papers(query, top_k=TOP_K_SEEDS):
     return [pid for _, pid in scores[:top_k]]
 
 
-# =========================
-# 6. GRAPH EXPANSION
-# =========================
+# GRAPH EXPANSION
 def get_neighbors(paper_ids, hops=HOPS):
     visited = set(paper_ids)
     frontier = set(paper_ids)
@@ -107,9 +95,7 @@ def get_neighbors(paper_ids, hops=HOPS):
     return visited
 
 
-# =========================
-# 7. BUILD CONTEXT
-# =========================
+# BUILD CONTEXT
 def build_context(seed_papers):
     neighbors = get_neighbors(seed_papers)
 
@@ -122,9 +108,7 @@ def build_context(seed_papers):
     return "\n".join(texts)
 
 
-# =========================
-# 8. GRAPH RAG + OLLAMA
-# =========================
+# GRAPH RAG + OLLAMA
 def ask(question):
     seeds = retrieve_seed_papers(question)
 
@@ -160,9 +144,7 @@ Answer:
     return response["message"]["content"]
 
 
-# =========================
-# 9. CLI LOOP
-# =========================
+# CLI LOOP
 if __name__ == "__main__":
     print("GraphRAG CORA ready (AUTO-SEED MODE)! type 'exit' to quit\n")
 

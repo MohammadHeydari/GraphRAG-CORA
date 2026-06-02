@@ -46,14 +46,14 @@ cd graphrag-cora
 2. Install dependencies
 
 ```
-pip install faiss-cpu sentence-transformers numpy ollama
+pip install -r requirements.txt
 
 ```
 
 3. Install Ollama (for LLM)
 
 
-https://ollama.com
+- https://ollama.com
 
 
 Then pull a model:

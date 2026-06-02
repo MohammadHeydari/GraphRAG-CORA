@@ -30,7 +30,7 @@ User Query - > Sentence Embedding (MiniLM) - > FAISS Retrieval (Top-K Papers) - 
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 GraphRAG/

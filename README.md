@@ -1,4 +1,5 @@
-# GraphRAG for CORA Dataset (FAISS + Citation Graph + LLM)
+# GraphRAG for CORA Dataset 
+### (FAISS + Citation Graph + LLM)
 
 A **hybrid GraphRAG system** for scientific paper retrieval and reasoning over the CORA dataset.  
 This project combines:

@@ -31,31 +31,6 @@ User Query - > Sentence Embedding (MiniLM) - > FAISS Retrieval (Top-K Papers) - 
 
 ---
 
-## Project Structure
-
-```
-GraphRAG/
-│
-├── CORA/ # Raw dataset files
-│ ├── papers_dataset.txt
-│ ├── citations.txt
-│ ├── words_dictionary.txt
-│ ├── authors_dataset.txt
-│
-├── paper_embeddings.npy # Precomputed embeddings
-├── paper_ids.npy # Paper ID mapping
-├── faiss_index.bin # FAISS index (optional)
-│
-├── build_embeddings.py # Build text embeddings
-├── build_index.py # Build FAISS index
-├── graphrag_hybrid.py # Hybrid GraphRAG pipeline
-├── graphrag_ultra.py # Advanced version (PageRank + rerank)
-│
-└── README.md
-```
-
----
-
 ## Installation
 
 ### 1. Clone repository

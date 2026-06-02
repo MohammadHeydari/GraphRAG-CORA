@@ -10,9 +10,8 @@ BASE_PATH = "./CORA/"
 TOP_K = 5
 HOPS = 1
 
-# =========================
-# 1. LOAD PAPERS
-# =========================
+
+# LOAD PAPERS
 papers = {}
 with open(os.path.join(BASE_PATH, "papers_dataset.txt"), "r", encoding="utf-8") as f:
     for line in f:
@@ -23,9 +22,8 @@ with open(os.path.join(BASE_PATH, "papers_dataset.txt"), "r", encoding="utf-8") 
         features = parts[2]
         papers[paper_id] = features
 
-# =========================
-# 2. WORDS DICTIONARY
-# =========================
+
+# WORDS DICTIONARY
 words_dict = {}
 with open(os.path.join(BASE_PATH, "words_dictionary.txt"), "r", encoding="utf-8") as f:
     for line in f:
@@ -40,9 +38,9 @@ def decode_features(feature_string):
             words.append(words_dict[code])
     return " ".join(words)
 
-# =========================
-# 3. LOAD CITATION GRAPH
-# =========================
+
+# LOAD CITATION GRAPH
+
 citation_graph = defaultdict(list)
 with open(os.path.join(BASE_PATH, "citations.txt"), "r", encoding="utf-8") as f:
     for line in f:
@@ -50,9 +48,9 @@ with open(os.path.join(BASE_PATH, "citations.txt"), "r", encoding="utf-8") as f:
         src, dst = inside.split(",")
         citation_graph[src].append(dst)
 
-# =========================
-# 4. LOAD FAISS + EMBEDDINGS
-# =========================
+
+# LOAD FAISS + EMBEDDINGS
+
 embeddings = np.load("paper_embeddings.npy")
 paper_ids = np.load("paper_ids.npy")
 dim = embeddings.shape[1]
@@ -62,17 +60,16 @@ index.add(embeddings)
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
-# =========================
-# 5. RETRIEVAL
-# =========================
+# RETRIEVAL
+
 def retrieve_top_papers(query, k=TOP_K):
     query_vec = model.encode(query, normalize_embeddings=True)
     D, I = index.search(query_vec.reshape(1, -1), k)
     return [paper_ids[i] for i in I[0]]
 
-# =========================
-# 6. GRAPH EXPANSION
-# =========================
+
+# GRAPH EXPANSION
+
 def get_neighbors(seed_papers, hops=HOPS):
     visited = set(seed_papers)
     frontier = set(seed_papers)
@@ -86,9 +83,8 @@ def get_neighbors(seed_papers, hops=HOPS):
         frontier = new_frontier
     return visited
 
-# =========================
-# 7. BUILD CONTEXT
-# =========================
+# BUILD CONTEXT
+
 def build_context(seed_papers):
     neighbors = get_neighbors(seed_papers)
     texts = []
@@ -98,9 +94,8 @@ def build_context(seed_papers):
             texts.append(f"Paper {pid}: {decoded}")
     return "\n".join(texts)
 
-# =========================
-# 8. ASK LLM
-# =========================
+# ASK LLM
+
 def ask(question):
     seeds = retrieve_top_papers(question)
     if not seeds:
@@ -130,9 +125,8 @@ Answer:
     )
     return response["message"]["content"]
 
-# =========================
-# 9. CLI
-# =========================
+# CLI
+
 if __name__ == "__main__":
     print("GraphRAG CORA PRO ready! type 'exit' to quit\n")
     while True:

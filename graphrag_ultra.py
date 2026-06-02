@@ -10,9 +10,7 @@ HOPS = 1
 DAMPING = 0.85
 ITER = 20
 
-# =========================
 # LOAD PAPERS
-# =========================
 papers = {}
 with open(BASE_PATH + "papers_dataset.txt", "r", encoding="utf-8") as f:
     for line in f:
@@ -21,9 +19,7 @@ with open(BASE_PATH + "papers_dataset.txt", "r", encoding="utf-8") as f:
             continue
         papers[parts[0]] = parts[2]
 
-# =========================
 # WORD DICT
-# =========================
 words_dict = {}
 with open(BASE_PATH + "words_dictionary.txt", "r", encoding="utf-8") as f:
     for line in f:
@@ -38,9 +34,7 @@ def decode(x):
             out.append(words_dict[c])
     return " ".join(out)
 
-# =========================
 # CITATION GRAPH
-# =========================
 graph = defaultdict(list)
 reverse = defaultdict(list)
 
@@ -53,9 +47,7 @@ with open(BASE_PATH + "citations.txt", "r") as f:
 
 nodes = list(papers.keys())
 
-# =========================
 # PAGE RANK (REAL)
-# =========================
 def pagerank():
     N = len(nodes)
     rank = {n: 1/N for n in nodes}
@@ -74,9 +66,7 @@ def pagerank():
 
 pagerank_score = pagerank()
 
-# =========================
 # FAISS
-# =========================
 embeddings = np.load("paper_embeddings.npy")
 paper_ids = np.load("paper_ids.npy")
 
@@ -86,9 +76,7 @@ faiss.normalize_L2(embeddings)
 index = faiss.IndexFlatIP(embeddings.shape[1])
 index.add(embeddings)
 
-# =========================
 # HYBRID RETRIEVAL + RERANK
-# =========================
 def retrieve(query):
     q = model.encode(query, normalize_embeddings=True)
 
@@ -105,9 +93,7 @@ def retrieve(query):
     candidates.sort(reverse=True)
     return [p for _, p in candidates[:5]]
 
-# =========================
 # GRAPH EXPANSION
-# =========================
 def expand(seed):
     visited = set(seed)
     frontier = set(seed)
@@ -121,9 +107,7 @@ def expand(seed):
 
     return visited
 
-# =========================
 # CONTEXT COMPRESSION
-# =========================
 def build_context(seeds):
     nodes = expand(seeds)
 
@@ -136,9 +120,7 @@ def build_context(seeds):
     # LIMIT CONTEXT (VERY IMPORTANT)
     return "\n".join(texts[:20])
 
-# =========================
 # ASK
-# =========================
 def ask(q):
     seeds = retrieve(q)
     context = build_context(seeds)
@@ -166,11 +148,9 @@ Answer clearly and avoid repetition.
 
     return res["message"]["content"]
 
-# =========================
 # CLI
-# =========================
 if __name__ == "__main__":
-    print("🔥 Ultra GraphRAG ready (exit to quit)\n")
+    print("Ultra GraphRAG ready (exit to quit)\n")
 
     while True:
         q = input("Question: ")

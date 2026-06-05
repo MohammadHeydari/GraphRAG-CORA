@@ -10,6 +10,8 @@ This project combines:
 - LLM reasoning (Ollama / Gemma)
 - Hybrid reranking (semantic + graph importance)
 
+![KG](images/knowledge-graphs.png)
+
 ---
 
 ## Overview
